@@ -1,6 +1,6 @@
 # ================================================================
 # app.py — PetPulse AI Flask Backend
-# CSE 3811 Artificial Intelligence | UIU | Student ID: 011320065
+# 
 #
 # Usage:
 #   pip install -r requirements.txt
@@ -20,7 +20,7 @@ from sklearn.model_selection import train_test_split
 import heapq, warnings, os, sys
 
 warnings.filterwarnings("ignore")
-np.random.seed(65)   # Derived from student ID 011320065
+np.random.seed(65)   
 
 app  = Flask(__name__)
 CORS(app)            # Allow cross-origin requests from the HTML frontend
@@ -32,9 +32,9 @@ CORS(app)            # Allow cross-origin requests from the HTML frontend
 
 def load_and_train():
     """
-    Loads pet_disease_full_merged.csv, preprocesses it (CO1),
-    trains a Decision Tree (CO4), sets up Naive Bayes tables (CO3),
-    and loads A* treatment graphs (CO2).
+    Loads pet_disease_full_merged.csv, preprocesses it,
+    trains a Decision Tree, sets up Naive Bayes tables,
+    and loads A* treatment graphs.
 
     Returns a dict of all artefacts needed at inference time.
     """
@@ -49,7 +49,7 @@ def load_and_train():
     df = pd.read_csv(csv_path)
     print(f"  Loaded: {df.shape[0]} rows × {df.shape[1]} columns")
 
-    # ── CO1: Preprocessing ──────────────────────────────────
+    # ── Preprocessing ──────────────────────────────────
     df_ml = df.drop(columns=["Treatment", "Advice Prevention"]).copy()
 
     # Fill missing values
@@ -92,7 +92,7 @@ def load_and_train():
     scaler = StandardScaler()
     df_ml[num_cols] = scaler.fit_transform(df_ml[num_cols])
 
-    # ── CO4: Decision Tree ───────────────────────────────────
+    # ── Decision Tree ───────────────────────────────────
     feature_cols = [c for c in df_ml.columns
                     if c not in ["Disease Prediction", "Disease_Encoded"]]
     X = df_ml[feature_cols].values
@@ -107,7 +107,7 @@ def load_and_train():
     dt_model.fit(X_train, y_train)
     print(f"  Decision Tree trained  (max_depth=5, gini criterion)")
 
-    # ── CO3: Naive Bayes tables ──────────────────────────────
+    # ── Naive Bayes tables ──────────────────────────────
     symptom_cols  = ["Symptom 1", "Symptom 2", "Symptom 3", "Symptom 4"]
     all_diseases  = df["Disease Prediction"].unique()
     priors        = (df["Disease Prediction"].value_counts() / len(df)).to_dict()
@@ -148,7 +148,7 @@ M = load_and_train()
 
 
 # ================================================================
-# A*  TREATMENT GRAPHS  (CO2)
+# A*  TREATMENT GRAPHS 
 # ================================================================
 
 TREATMENT_GRAPHS = {
@@ -279,7 +279,7 @@ TREATMENT_GRAPHS = {
 
 def a_star(start, goal, edges, heuristics):
     """
-    A* Search (CO2).  Returns (path: list[str], cost: int).
+    A* Search .  Returns (path: list[str], cost: int).
     f(n) = g(n) + h(n) — guaranteed optimal when h is admissible.
     """
     open_heap  = [(heuristics.get(start, 0), 0, start, [start])]
@@ -355,7 +355,7 @@ def is_input_complete(session):
 
 def bayesian_symptom_reasoning(observed_symptoms, top_n=5):
     """
-    CO3: Naive Bayes inference with Laplace smoothing.
+     Naive Bayes inference with Laplace smoothing.
     Handles incomplete input naturally — missing features are skipped.
     Log-space arithmetic prevents floating-point underflow.
     """
@@ -423,7 +423,7 @@ def diagnose():
 
     # ── Route to inference engine ────────────────────────────
     if complete:
-        # CO4: Decision Tree
+        # Decision Tree
         fv   = encode_input_for_ml(session)
         prob = M["dt_model"].predict_proba(fv)[0]
         top5 = prob.argsort()[-5:][::-1]
@@ -432,9 +432,9 @@ def diagnose():
              "probability": float(prob[i])}
             for i in top5
         ]
-        engine = "Decision Tree (CO4) — max_depth=5, Gini criterion"
+        engine = "Decision Tree — max_depth=5, Gini criterion"
     else:
-        # CO3: Naive Bayes
+        #Naive Bayes
         obs = {
             k: v for k, v in session.items()
             if k in M["symptom_cols"] + M["binary_cols"]
@@ -445,11 +445,11 @@ def diagnose():
             {"disease": d, "probability": float(p)}
             for d, p in bayes
         ]
-        engine = "Naive Bayes (CO3) — Laplace smoothing, log-space arithmetic"
+        engine = "Naive Bayes— Laplace smoothing, log-space arithmetic"
 
     primary = top_diseases[0]["disease"]
 
-    # ── CO2: A* Treatment Path ───────────────────────────────
+    # ──A* Treatment Path ───────────────────────────────
     path, cost = get_treatment_path(primary)
     treatment_path = {
         "path": [
