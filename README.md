@@ -86,30 +86,30 @@ The system auto-trains from a CSV on startup, exposes a REST API, and ships with
 
 ```mermaid
 flowchart TD
-    A[🌐 HTML Frontend\nindex.html] -->|POST /api/diagnose| B[Flask REST API\napp.py]
-    A -->|Backend offline| Z[Embedded JS Engine\nfallback mode]
+    A["HTML Frontend\nindex.html"] -->|"POST /api/diagnose"| B["Flask REST API\napp.py"]
+    A -->|"Backend offline"| Z["Embedded JS Engine\nfallback mode"]
 
-    B --> C{Input\nComplete?}
+    B --> C{"Input\nComplete?"}
 
-    C -->|4 symptoms +\n≥4 flags| D[🌲 Decision Tree\nGini · max_depth=5\nsklearn]
-    C -->|Partial /\nmissing fields| E[🎲 Naïve Bayes\nLaplace smoothing\nlog-space arithmetic]
+    C -->|"4 symptoms + 4 flags"| D["Decision Tree\nGini · max_depth=5\nsklearn"]
+    C -->|"Partial / missing fields"| E["Naive Bayes\nLaplace smoothing\nlog-space arithmetic"]
 
-    D --> F[Top-5 Disease Ranking\nwith probabilities]
+    D --> F["Top-5 Disease Ranking\nwith probabilities"]
     E --> F
 
-    F --> G[A* Treatment Search\nf·n = g·n + h·n\nheapq min-heap]
+    F --> G["A-Star Treatment Search\nf = g + h\nheapq min-heap"]
 
-    G --> H{Disease-specific\ngraph?}
-    H -->|Yes| I[5 custom graphs\nParvovirus · BRD\nURI · FIP · TB]
-    H -->|No| J[Generic fallback\nTriage → Discharge]
+    G --> H{"Disease-specific\ngraph?"}
+    H -->|"Yes"| I["5 custom graphs\nParvovirus · BRD\nURI · FIP · TB"]
+    H -->|"No"| J["Generic fallback\nTriage to Discharge"]
 
-    I --> K[📋 JSON Response\nprimary disease · top-5\npath · treatment · prevention]
+    I --> K["JSON Response\nprimary disease · top-5\npath · treatment · prevention"]
     J --> K
 
-    style D fill:#0d2,color:#000
-    style E fill:#06b,color:#fff
-    style G fill:#f70,color:#000
-    style K fill:#047,color:#fff
+    style D fill:#00b580,color:#000000
+    style E fill:#0066bb,color:#ffffff
+    style G fill:#ff7700,color:#000000
+    style K fill:#004477,color:#ffffff
 ```
 
 ### Project Structure
