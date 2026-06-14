@@ -1,0 +1,1934 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PetPulse AI — Presentation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;0,9..144,900;1,9..144,300;1,9..144,700&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+/* ═══════════════════════════════════════════════
+   TOKENS
+═══════════════════════════════════════════════ */
+:root {
+  --ink:    #0B1E1B;
+  --deep:   #112720;
+  --card:   #162E29;
+  --teal:   #1AAE87;
+  --teal2:  #0DD4A4;
+  --coral:  #FF7A5C;
+  --amber:  #F5A623;
+  --sky:    #5BB8D4;
+  --chalk:  #EEF5F2;
+  --mist:   #A8C4BC;
+  --border: rgba(26,174,135,.18);
+  --glow:   rgba(26,174,135,.12);
+
+  --ff-head: 'Fraunces', Georgia, serif;
+  --ff-body: 'Space Grotesk', sans-serif;
+  --ff-mono: 'Space Mono', monospace;
+}
+
+/* ═══════════════════════════════════════════════
+   RESET + BASE
+═══════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body {
+  background: var(--ink);
+  color: var(--chalk);
+  font-family: var(--ff-body);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scroll-snap container */
+.deck {
+  height: 100vh;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  scrollbar-width: thin;
+  scrollbar-color: var(--teal) var(--ink);
+}
+.deck::-webkit-scrollbar { width: 5px; }
+.deck::-webkit-scrollbar-thumb { background: var(--teal); border-radius: 3px; }
+
+/* Each slide */
+.slide {
+  min-height: 100vh;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 60px 80px;
+  overflow: hidden;
+}
+@media (max-width: 768px) { .slide { padding: 40px 28px; } }
+
+/* ═══════════════════════════════════════════════
+   SLIDE COUNTER + NAV DOTS
+═══════════════════════════════════════════════ */
+.nav-dots {
+  position: fixed;
+  right: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 100;
+}
+.nav-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--mist);
+  opacity: .35;
+  cursor: pointer;
+  transition: all .3s;
+  border: none;
+}
+.nav-dot.active { background: var(--teal); opacity: 1; transform: scale(1.4); }
+
+/* Slide number */
+.slide-num {
+  position: absolute;
+  bottom: 28px; right: 80px;
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  color: var(--mist);
+  opacity: .45;
+}
+
+/* ═══════════════════════════════════════════════
+   SIGNATURE ELEMENT: Pulse-Line SVG (recurs across slides)
+═══════════════════════════════════════════════ */
+.pulse-bg {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 120px;
+  opacity: .07;
+  pointer-events: none;
+}
+.pulse-small {
+  opacity: .12;
+  width: 100%;
+  height: 48px;
+  pointer-events: none;
+}
+@keyframes drawLine {
+  from { stroke-dashoffset: 900; }
+  to   { stroke-dashoffset: 0;   }
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(.88); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes floatY {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-8px); }
+}
+@keyframes blip {
+  0%,90%,100% { r: 4; opacity: 1; }
+  95%          { r: 9; opacity: .4; }
+}
+@keyframes run {
+  from { stroke-dashoffset: 1400; }
+  to   { stroke-dashoffset: 0; }
+}
+
+/* Animated line on hero */
+.ecg-hero polyline {
+  stroke-dasharray: 900;
+  stroke-dashoffset: 900;
+  animation: drawLine 2.8s ease forwards .6s;
+}
+
+/* ═══════════════════════════════════════════════
+   TYPOGRAPHY HELPERS
+═══════════════════════════════════════════════ */
+.eyebrow {
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--teal);
+  margin-bottom: 14px;
+}
+.display {
+  font-family: var(--ff-head);
+  font-weight: 900;
+  line-height: 1.05;
+}
+.serif-em { font-family: var(--ff-head); font-style: italic; color: var(--teal2); }
+.body-text { font-size: 15px; color: var(--mist); line-height: 1.75; }
+.mono { font-family: var(--ff-mono); }
+
+/* ═══════════════════════════════════════════════
+   SHARED COMPONENTS
+═══════════════════════════════════════════════ */
+.chip {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: var(--glow);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 4px 14px;
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  color: var(--teal);
+}
+.chip-coral { background: rgba(255,122,92,.1); border-color: rgba(255,122,92,.3); color: var(--coral); }
+.chip-sky   { background: rgba(91,184,212,.1); border-color: rgba(91,184,212,.3); color: var(--sky);   }
+.chip-amber { background: rgba(245,166,35,.1); border-color: rgba(245,166,35,.3); color: var(--amber); }
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px 26px;
+}
+.card-glow {
+  box-shadow: 0 0 40px rgba(26,174,135,.08);
+}
+.teal-bar {
+  width: 3px; height: 100%; border-radius: 3px;
+  background: linear-gradient(180deg, var(--teal), transparent);
+  flex-shrink: 0;
+}
+.divider {
+  width: 48px; height: 2px;
+  background: var(--teal);
+  border-radius: 2px;
+  margin: 18px 0;
+}
+
+/* ═══════════════════════════════════════════════
+   SLIDE 1 — HERO / TITLE
+═══════════════════════════════════════════════ */
+#s1 { background: var(--ink); justify-content: center; }
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  gap: 60px;
+  align-items: center;
+  max-width: 1200px;
+  width: 100%;
+}
+@media (max-width: 900px) { .hero-grid { grid-template-columns: 1fr; } }
+
+.hero-title {
+  font-size: clamp(48px, 6.5vw, 88px);
+  color: var(--chalk);
+}
+.hero-title .pulse-word {
+  color: var(--teal2);
+  position: relative;
+}
+.hero-sub {
+  font-size: clamp(15px, 1.6vw, 18px);
+  color: var(--mist);
+  max-width: 480px;
+  line-height: 1.7;
+  margin-top: 22px;
+}
+.hero-tags { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+
+/* Vitals card on hero */
+.vitals-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 28px;
+  animation: floatY 5s ease-in-out infinite;
+  box-shadow: 0 16px 60px rgba(0,0,0,.4), 0 0 60px rgba(26,174,135,.06);
+}
+.vitals-header {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 20px;
+}
+.vitals-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--teal); box-shadow: 0 0 8px var(--teal); }
+.vitals-title { font-family: var(--ff-mono); font-size: 11px; color: var(--mist); letter-spacing: .1em; }
+
+.vitals-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+.vital-item { background: var(--deep); border-radius: 10px; padding: 12px 14px; }
+.vital-label { font-family: var(--ff-mono); font-size: 9px; color: var(--mist); letter-spacing: .1em; text-transform: uppercase; }
+.vital-val { font-family: var(--ff-mono); font-size: 20px; font-weight: 700; color: var(--teal2); margin-top: 4px; }
+.vital-val.danger { color: var(--coral); }
+
+.diagnosis-result {
+  background: rgba(26,174,135,.12);
+  border: 1px solid rgba(26,174,135,.3);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-top: 14px;
+}
+.diag-label { font-family: var(--ff-mono); font-size: 9px; color: var(--teal); letter-spacing: .1em; }
+.diag-val { font-family: var(--ff-head); font-size: 20px; font-weight: 700; color: var(--chalk); margin-top: 3px; }
+.diag-conf { font-family: var(--ff-mono); font-size: 11px; color: var(--teal); margin-top: 4px; }
+
+.confidence-bar {
+  height: 4px; background: rgba(26,174,135,.2); border-radius: 2px; margin-top: 10px; overflow: hidden;
+}
+.confidence-fill {
+  height: 100%; width: 87%;
+  background: linear-gradient(90deg, var(--teal), var(--teal2));
+  border-radius: 2px;
+  animation: scaleIn 1.2s ease forwards 1.5s;
+  transform-origin: left;
+}
+
+/* ═══════════════════════════════════════════════
+   SLIDE 2 — THE PROBLEM
+═══════════════════════════════════════════════ */
+#s2 { background: var(--deep); }
+
+.problem-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  margin-top: 40px;
+}
+@media (max-width: 768px) { .problem-grid { grid-template-columns: 1fr; } }
+
+.problem-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 28px;
+  position: relative;
+  overflow: hidden;
+}
+.problem-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0;
+  width: 100%; height: 3px;
+}
+.problem-card.p1::before { background: linear-gradient(90deg, var(--coral), transparent); }
+.problem-card.p2::before { background: linear-gradient(90deg, var(--amber), transparent); }
+.problem-card.p3::before { background: linear-gradient(90deg, var(--teal), transparent); }
+.problem-card.p4::before { background: linear-gradient(90deg, var(--sky), transparent); }
+
+.problem-icon { font-size: 32px; margin-bottom: 14px; }
+.problem-title { font-family: var(--ff-head); font-size: 20px; font-weight: 700; margin-bottom: 10px; }
+.problem-body { font-size: 13px; color: var(--mist); line-height: 1.7; }
+
+.stat-callout {
+  text-align: center;
+  padding: 18px;
+  background: var(--deep);
+  border-radius: 10px;
+  margin-top: 16px;
+}
+.stat-num { font-family: var(--ff-head); font-size: 36px; font-weight: 900; }
+.stat-label { font-size: 11px; color: var(--mist); margin-top: 4px; }
+
+/* ═══════════════════════════════════════════════
+   SLIDE 3 — SYSTEM OVERVIEW
+═══════════════════════════════════════════════ */
+#s3 { background: var(--ink); }
+
+.arch-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  margin-top: 36px;
+  align-items: start;
+}
+@media (max-width: 768px) { .arch-wrap { grid-template-columns: 1fr; } }
+
+/* Flow diagram */
+.flow {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.flow-node {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  position: relative;
+}
+.flow-connector {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  width: 36px;
+}
+.flow-dot {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  border: 2px solid var(--teal);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--ff-mono); font-size: 12px; font-weight: 700;
+  color: var(--teal); background: var(--glow);
+  flex-shrink: 0;
+  transition: all .2s;
+}
+.flow-dot.filled { background: var(--teal); color: var(--ink); }
+.flow-line { width: 2px; flex: 1; background: var(--border); min-height: 22px; }
+.flow-content { padding: 6px 0 22px; }
+.flow-title { font-weight: 600; font-size: 15px; margin-bottom: 5px; }
+.flow-desc { font-size: 13px; color: var(--mist); line-height: 1.6; }
+
+/* Stack pills */
+.stack-pills { display: flex; flex-direction: column; gap: 10px; }
+.stack-pill {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition: border-color .2s;
+}
+.stack-pill:hover { border-color: var(--teal); }
+.stack-icon { font-size: 22px; flex-shrink: 0; }
+.stack-info { flex: 1; }
+.stack-name { font-weight: 600; font-size: 14px; }
+.stack-role { font-size: 12px; color: var(--mist); margin-top: 2px; }
+.stack-badge { font-family: var(--ff-mono); font-size: 10px; padding: 2px 9px; border-radius: 20px; flex-shrink: 0; }
+.badge-teal   { background: var(--glow); color: var(--teal); border: 1px solid var(--border); }
+.badge-coral  { background: rgba(255,122,92,.1); color: var(--coral); border: 1px solid rgba(255,122,92,.3); }
+.badge-sky    { background: rgba(91,184,212,.1); color: var(--sky); border: 1px solid rgba(91,184,212,.3); }
+.badge-amber  { background: rgba(245,166,35,.1); color: var(--amber); border: 1px solid rgba(245,166,35,.3); }
+
+/* ═══════════════════════════════════════════════
+   SLIDE 4 — DATA & PREPROCESSING
+═══════════════════════════════════════════════ */
+#s4 { background: var(--deep); }
+
+.data-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 36px;
+  margin-top: 36px;
+  align-items: start;
+}
+@media (max-width: 768px) { .data-grid { grid-template-columns: 1fr; } }
+
+.dataset-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+}
+.dataset-header {
+  background: var(--glow);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 20px;
+  display: flex; align-items: center; gap: 10px;
+}
+.ds-dot { width: 10px; height: 10px; border-radius: 50%; }
+.dataset-body { padding: 20px; }
+.feature-list { display: flex; flex-direction: column; gap: 8px; }
+.feature-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255,255,255,.04);
+  font-size: 13px;
+}
+.feature-row:last-child { border-bottom: none; }
+.f-name { color: var(--chalk); }
+.f-type { font-family: var(--ff-mono); font-size: 10px; }
+
+.pipeline-steps { display: flex; flex-direction: column; gap: 12px; }
+.pipe-step {
+  display: flex; gap: 14px; align-items: flex-start;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 18px;
+  position: relative;
+  overflow: hidden;
+}
+.pipe-step::before {
+  content: '';
+  position: absolute; left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--teal);
+  border-radius: 3px 0 0 3px;
+}
+.pipe-num {
+  font-family: var(--ff-mono);
+  font-size: 12px; font-weight: 700;
+  color: var(--teal);
+  flex-shrink: 0; width: 24px;
+}
+.pipe-info .pipe-title { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+.pipe-info .pipe-desc { font-size: 12px; color: var(--mist); line-height: 1.6; }
+
+/* ═══════════════════════════════════════════════
+   SLIDE 5 — DECISION TREE
+═══════════════════════════════════════════════ */
+#s5 { background: var(--ink); }
+
+.dt-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 36px;
+  margin-top: 36px;
+  align-items: start;
+}
+@media (max-width: 768px) { .dt-layout { grid-template-columns: 1fr; } }
+
+/* Visual decision tree */
+.tree-svg-wrap {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+  overflow: hidden;
+}
+.tree-svg-wrap svg { width: 100%; height: auto; }
+
+.node-box {
+  rx: 8; ry: 8;
+  fill: var(--deep);
+  stroke: var(--teal);
+  stroke-width: 1.5;
+}
+.node-box.leaf { stroke: var(--coral); }
+.node-box.root { stroke: var(--teal2); stroke-width: 2.5; fill: rgba(13,212,164,.08); }
+.edge { stroke: var(--mist); stroke-width: 1; opacity: .35; }
+.edge-label { fill: var(--mist); font-size: 9px; font-family: 'Space Mono', monospace; }
+.node-text-main { fill: var(--chalk); font-size: 9.5px; font-family: 'Space Grotesk', sans-serif; font-weight: 600; }
+.node-text-sub  { fill: var(--mist); font-size: 8px; font-family: 'Space Mono', monospace; }
+.leaf-text { fill: var(--coral); font-size: 8.5px; font-family: 'Space Grotesk', sans-serif; font-weight: 600; }
+.gini-text { fill: var(--teal); font-size: 7.5px; font-family: 'Space Mono', monospace; }
+
+/* Metrics */
+.metrics-col { display: flex; flex-direction: column; gap: 14px; }
+.metric-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px 20px;
+}
+.metric-label { font-family: var(--ff-mono); font-size: 10px; color: var(--mist); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 8px; }
+.metric-val { font-family: var(--ff-head); font-size: 36px; font-weight: 900; }
+.metric-bar { height: 5px; border-radius: 3px; background: rgba(255,255,255,.07); margin-top: 10px; overflow: hidden; }
+.metric-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--teal), var(--teal2)); }
+
+.params-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 4px; }
+.param-item {
+  background: var(--deep);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+.param-key { font-family: var(--ff-mono); font-size: 9px; color: var(--mist); }
+.param-val { font-family: var(--ff-mono); font-size: 13px; color: var(--teal2); font-weight: 700; margin-top: 3px; }
+
+/* ═══════════════════════════════════════════════
+   SLIDE 6 — NAIVE BAYES
+═══════════════════════════════════════════════ */
+#s6 { background: var(--deep); }
+
+.nb-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 36px;
+  margin-top: 36px;
+  align-items: start;
+}
+@media (max-width: 768px) { .nb-layout { grid-template-columns: 1fr; } }
+
+/* Probability table */
+.prob-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.prob-table th {
+  font-family: var(--ff-mono);
+  font-size: 9px;
+  color: var(--teal);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+}
+.prob-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(255,255,255,.04);
+  vertical-align: middle;
+}
+.prob-table tr:last-child td { border-bottom: none; }
+.dis-name-cell { font-weight: 500; font-size: 12px; }
+.pbar-wrap { width: 80px; height: 5px; background: rgba(255,255,255,.07); border-radius: 3px; overflow: hidden; display: inline-block; vertical-align: middle; margin-right: 6px; }
+.pbar-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--teal), var(--teal2)); }
+.pct-num { font-family: var(--ff-mono); font-size: 11px; color: var(--teal); }
+
+.formula-card {
+  background: var(--ink);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 22px;
+  margin-bottom: 16px;
+  font-family: var(--ff-mono);
+  font-size: 13px;
+  line-height: 2;
+  color: var(--chalk);
+}
+.f-comment { color: var(--mist); font-size: 11px; }
+.f-highlight { color: var(--teal2); }
+.f-coral { color: var(--coral); }
+
+.nb-advantage-list { display: flex; flex-direction: column; gap: 10px; }
+.nb-adv {
+  display: flex; align-items: flex-start; gap: 10px;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 10px; padding: 12px 14px;
+  font-size: 13px;
+}
+.nb-adv-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+.nb-adv-text { color: var(--mist); line-height: 1.6; }
+
+/* ═══════════════════════════════════════════════
+   SLIDE 7 — A* TREATMENT PATH
+═══════════════════════════════════════════════ */
+#s7 { background: var(--ink); }
+
+.astar-layout {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 36px;
+  margin-top: 36px;
+  align-items: start;
+}
+@media (max-width: 768px) { .astar-layout { grid-template-columns: 1fr; } }
+
+/* Interactive path selector */
+.disease-tabs {
+  display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px;
+}
+.dtab {
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  padding: 5px 14px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  color: var(--mist);
+  cursor: pointer;
+  transition: all .2s;
+  background: transparent;
+}
+.dtab:hover { border-color: var(--teal); color: var(--teal); }
+.dtab.active { background: var(--teal); color: var(--ink); border-color: var(--teal); font-weight: 700; }
+
+/* Animated path */
+.path-visual {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+  min-height: 320px;
+}
+.path-node-row {
+  display: flex; align-items: flex-start; gap: 14px;
+  padding: 0;
+}
+.pn-connector { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; width: 32px; }
+.pn-dot {
+  width: 32px; height: 32px; border-radius: 50%;
+  border: 2px solid var(--teal);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--ff-mono); font-size: 11px;
+  color: var(--teal); background: var(--glow);
+  flex-shrink: 0;
+  transition: all .3s;
+  position: relative;
+}
+.pn-dot.goal {
+  background: var(--teal); color: var(--ink); font-weight: 700;
+  box-shadow: 0 0 20px rgba(26,174,135,.4);
+}
+.pn-line { width: 2px; flex: 1; background: var(--border); min-height: 20px; }
+.pn-content { padding: 6px 0 18px; }
+.pn-action { font-weight: 600; font-size: 14px; }
+.pn-cost {
+  font-family: var(--ff-mono); font-size: 10px;
+  color: var(--mist); margin-top: 3px;
+}
+.pn-goal-label { font-family: var(--ff-mono); font-size: 10px; color: var(--teal); margin-top: 4px; }
+
+/* A* formula */
+.astar-formula {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 22px;
+  margin-top: 16px;
+}
+.af-title { font-family: var(--ff-mono); font-size: 11px; color: var(--teal); margin-bottom: 14px; letter-spacing: .1em; }
+.af-eq {
+  font-family: var(--ff-mono);
+  font-size: 17px;
+  color: var(--chalk);
+  text-align: center;
+  padding: 12px;
+  background: var(--deep);
+  border-radius: 8px;
+  margin-bottom: 14px;
+}
+.af-terms { display: flex; flex-direction: column; gap: 8px; }
+.af-term {
+  display: flex; gap: 10px; align-items: flex-start;
+  font-size: 12px; color: var(--mist);
+}
+.af-sym { color: var(--teal2); font-family: var(--ff-mono); font-size: 14px; font-weight: 700; width: 20px; flex-shrink: 0; }
+
+/* ═══════════════════════════════════════════════
+   SLIDE 8 — LIVE EXAMPLE
+═══════════════════════════════════════════════ */
+#s8 { background: var(--deep); }
+
+.example-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 18px;
+  margin-top: 36px;
+  align-items: start;
+}
+@media (max-width: 900px) { .example-grid { grid-template-columns: 1fr; } }
+
+.ex-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+}
+.ex-header {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
+}
+.ex-animal-icon { font-size: 22px; }
+.ex-title { font-weight: 600; font-size: 15px; }
+.ex-subtitle { font-size: 11px; color: var(--mist); margin-top: 1px; }
+.ex-body { padding: 18px; }
+
+.ex-input-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+.ex-input-row {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 12px; padding: 6px 0;
+  border-bottom: 1px solid rgba(255,255,255,.04);
+}
+.ex-input-row:last-child { border-bottom: none; }
+.ex-key { color: var(--mist); }
+.ex-val { font-family: var(--ff-mono); font-size: 11px; color: var(--chalk); }
+.ex-val.pos { color: var(--coral); }
+
+.ex-result {
+  background: rgba(26,174,135,.08);
+  border: 1px solid rgba(26,174,135,.25);
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+.ex-disease { font-family: var(--ff-head); font-size: 17px; font-weight: 700; margin-bottom: 4px; }
+.ex-conf { font-family: var(--ff-mono); font-size: 10px; color: var(--teal); }
+.ex-bar { height: 4px; background: rgba(26,174,135,.2); border-radius: 2px; margin-top: 8px; }
+.ex-bar-fill { height: 100%; border-radius: 2px; background: linear-gradient(90deg, var(--teal), var(--teal2)); }
+.ex-urgency {
+  display: inline-block; margin-top: 8px;
+  font-family: var(--ff-mono); font-size: 9px; font-weight: 700;
+  padding: 2px 10px; border-radius: 20px;
+  letter-spacing: .08em;
+}
+.urg-emergency { background: rgba(255,122,92,.15); color: var(--coral); border: 1px solid rgba(255,122,92,.4); }
+.urg-high      { background: rgba(245,166,35,.12); color: var(--amber); border: 1px solid rgba(245,166,35,.3); }
+.urg-moderate  { background: var(--glow); color: var(--teal); border: 1px solid var(--border); }
+
+/* ═══════════════════════════════════════════════
+   SLIDE 9 — API
+═══════════════════════════════════════════════ */
+#s9 { background: var(--ink); }
+
+.api-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 36px;
+  margin-top: 36px;
+  align-items: start;
+}
+@media (max-width: 768px) { .api-grid { grid-template-columns: 1fr; } }
+
+.endpoint-list { display: flex; flex-direction: column; gap: 12px; }
+.endpoint {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 18px;
+  display: flex; align-items: flex-start; gap: 14px;
+}
+.method-badge {
+  font-family: var(--ff-mono); font-size: 10px; font-weight: 700;
+  padding: 3px 10px; border-radius: 5px; flex-shrink: 0;
+}
+.get  { background: rgba(91,184,212,.15); color: var(--sky); border: 1px solid rgba(91,184,212,.3); }
+.post { background: rgba(26,174,135,.15); color: var(--teal); border: 1px solid var(--border); }
+.ep-path { font-family: var(--ff-mono); font-size: 13px; color: var(--chalk); margin-bottom: 4px; }
+.ep-desc { font-size: 12px; color: var(--mist); line-height: 1.6; }
+
+/* JSON block */
+.json-block {
+  background: var(--ink);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 22px;
+  font-family: var(--ff-mono);
+  font-size: 12px;
+  line-height: 1.9;
+  overflow-x: auto;
+}
+.jkey   { color: var(--sky); }
+.jstr   { color: var(--teal2); }
+.jnum   { color: var(--amber); }
+.jbool  { color: var(--coral); }
+.jcomma { color: var(--mist); }
+
+/* ═══════════════════════════════════════════════
+   SLIDE 10 — CLOSING
+═══════════════════════════════════════════════ */
+#s10 { background: var(--deep); }
+
+.closing-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  margin-top: 40px;
+  align-items: start;
+}
+@media (max-width: 768px) { .closing-grid { grid-template-columns: 1fr; } }
+
+.summary-list { display: flex; flex-direction: column; gap: 14px; }
+.sum-item {
+  display: flex; align-items: flex-start; gap: 14px;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 16px 18px;
+}
+.sum-icon { font-size: 22px; flex-shrink: 0; }
+.sum-title { font-weight: 600; font-size: 15px; margin-bottom: 4px; }
+.sum-desc { font-size: 12px; color: var(--mist); line-height: 1.6; }
+
+.future-list { display: flex; flex-direction: column; gap: 10px; }
+.future-item {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 10px; padding: 12px 16px;
+  font-size: 13px; color: var(--mist);
+}
+.fi-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--teal); flex-shrink: 0; }
+
+.project-footer {
+  margin-top: 40px;
+  padding-top: 22px;
+  border-top: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 14px;
+}
+.pf-brand { font-family: var(--ff-head); font-size: 22px; font-weight: 900; color: var(--teal2); }
+.pf-meta { font-size: 12px; color: var(--mist); line-height: 1.8; font-family: var(--ff-mono); }
+.pf-stack { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* ═══════════════════════════════════════════════
+   SCROLL-TRIGGERED ANIMATIONS
+═══════════════════════════════════════════════ */
+.anim-ready {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity .6s ease, transform .6s ease;
+}
+.anim-ready.visible {
+  opacity: 1;
+  transform: none;
+}
+.anim-delay-1 { transition-delay: .1s !important; }
+.anim-delay-2 { transition-delay: .2s !important; }
+.anim-delay-3 { transition-delay: .3s !important; }
+.anim-delay-4 { transition-delay: .45s !important; }
+
+/* ═══════════════════════════════════════════════
+   PROGRESS BAR (thin top bar)
+═══════════════════════════════════════════════ */
+.progress-bar {
+  position: fixed; top: 0; left: 0;
+  height: 2px; background: linear-gradient(90deg, var(--teal), var(--teal2));
+  z-index: 200;
+  transition: width .2s ease;
+}
+</style>
+</head>
+<body>
+
+<!-- Progress bar -->
+<div class="progress-bar" id="progressBar" style="width:10%"></div>
+
+<!-- Nav dots -->
+<div class="nav-dots" id="navDots"></div>
+
+<div class="deck" id="deck">
+
+<!-- ═══════════ SLIDE 1 — TITLE ═══════════ -->
+<section class="slide" id="s1">
+  <div class="hero-grid">
+    <div>
+      <div class="eyebrow">Artificial Intelligence Project</div>
+      <h1 class="display hero-title">
+        Pet<span class="pulse-word">Pulse</span><br/>AI
+      </h1>
+      <p class="hero-sub">
+        An intelligent veterinary diagnostic system that detects diseases in Dogs, Cats, and Cattle — and plans the optimal treatment path — using hybrid AI reasoning.
+      </p>
+      <div class="hero-tags">
+        <span class="chip">Decision Tree</span>
+        <span class="chip chip-coral">Naive Bayes</span>
+        <span class="chip chip-sky">A* Search</span>
+        <span class="chip chip-amber">Flask REST API</span>
+      </div>
+
+      <!-- ECG pulse line under the text -->
+      <svg class="ecg-hero" style="margin-top:36px;width:100%;height:50px;overflow:visible" viewBox="0 0 540 50">
+        <polyline fill="none" stroke="#1AAE87" stroke-width="2"
+          points="0,25 40,25 55,25 65,4 78,48 88,25 110,25 150,25 165,25 175,4 188,48 198,25 220,25 260,25 275,25 285,4 298,48 308,25 330,25 370,25 385,25 395,4 408,48 418,25 440,25 480,25 495,25 505,4 518,48 528,25 540,25"/>
+      </svg>
+    </div>
+
+    <!-- Floating vitals card -->
+    <div class="vitals-card">
+      <div class="vitals-header">
+        <div class="vitals-dot"></div>
+        <div class="vitals-title">PATIENT ASSESSMENT · LIVE</div>
+      </div>
+      <div style="font-size:11px;color:var(--mist);margin-bottom:14px;font-family:var(--ff-mono)">
+        Bruno · Golden Retriever · 3 yrs
+      </div>
+      <div class="vitals-grid">
+        <div class="vital-item">
+          <div class="vital-label">BODY TEMP</div>
+          <div class="vital-val danger">40.2°C</div>
+        </div>
+        <div class="vital-item">
+          <div class="vital-label">HEART RATE</div>
+          <div class="vital-val">118 bpm</div>
+        </div>
+        <div class="vital-item">
+          <div class="vital-label">PRIMARY SYM.</div>
+          <div class="vital-val" style="font-size:14px">Vomiting</div>
+        </div>
+        <div class="vital-item">
+          <div class="vital-label">SECONDARY</div>
+          <div class="vital-val" style="font-size:14px">Diarrhea</div>
+        </div>
+      </div>
+      <div class="diagnosis-result">
+        <div class="diag-label">AI DIAGNOSIS</div>
+        <div class="diag-val">Canine Parvovirus</div>
+        <div class="diag-conf">Confidence: 87.3%</div>
+        <div class="confidence-bar"><div class="confidence-fill"></div></div>
+      </div>
+      <div style="margin-top:14px;display:flex;justify-content:space-between;align-items:center;">
+        <span class="chip chip-coral" style="font-size:10px;">⚠ EMERGENCY</span>
+        <span style="font-family:var(--ff-mono);font-size:10px;color:var(--mist)">Engine: Decision Tree</span>
+      </div>
+    </div>
+  </div>
+
+  <svg class="pulse-bg" viewBox="0 0 1400 120" preserveAspectRatio="none">
+    <polyline fill="none" stroke="#1AAE87" stroke-width="2.5"
+      points="0,60 80,60 110,60 130,10 150,110 170,60 220,60 310,60 340,60 360,10 380,110 400,60 450,60 540,60 570,60 590,10 610,110 630,60 680,60 770,60 800,60 820,10 840,110 860,60 910,60 1000,60 1030,60 1050,10 1070,110 1090,60 1140,60 1230,60 1260,60 1280,10 1300,110 1320,60 1400,60"/>
+  </svg>
+  <div class="slide-num">01 / 10</div>
+</section>
+
+
+<!-- ═══════════ SLIDE 2 — THE PROBLEM ═══════════ -->
+<section class="slide" id="s2">
+  <div style="max-width:1100px;width:100%">
+    <div class="eyebrow anim-ready">The Challenge</div>
+    <h2 class="display anim-ready anim-delay-1" style="font-size:clamp(32px,4vw,52px)">
+      Veterinary diagnosis is <span class="serif-em">slow</span>,<br/>expensive, and error-prone.
+    </h2>
+    <div class="divider anim-ready anim-delay-2"></div>
+
+    <div class="problem-grid anim-ready anim-delay-3">
+      <div class="problem-card p1">
+        <div class="problem-icon">⏱</div>
+        <div class="problem-title">Delayed Diagnosis</div>
+        <div class="problem-body">
+          Critical diseases like Canine Parvovirus and Bovine Respiratory Disease worsen rapidly. Every hour without a correct diagnosis increases mortality risk significantly.
+        </div>
+        <div class="stat-callout">
+          <div class="stat-num" style="color:var(--coral)">6–24h</div>
+          <div class="stat-label">Average wait for specialist consultation</div>
+        </div>
+      </div>
+      <div class="problem-card p2">
+        <div class="problem-icon">🧩</div>
+        <div class="problem-title">Overlapping Symptoms</div>
+        <div class="problem-body">
+          Fever + Lethargy + Appetite Loss appears across 12+ different diseases. Distinguishing them requires systematic probabilistic reasoning — not guesswork.
+        </div>
+        <div class="stat-callout">
+          <div class="stat-num" style="color:var(--amber)">68</div>
+          <div class="stat-label">Distinct disease classes in our dataset</div>
+        </div>
+      </div>
+      <div class="problem-card p3">
+        <div class="problem-icon">📋</div>
+        <div class="problem-title">No Treatment Roadmap</div>
+        <div class="problem-body">
+          Even after a correct diagnosis, finding the optimal step-by-step treatment sequence — especially with cost and urgency constraints — is non-trivial.
+        </div>
+        <div class="stat-callout">
+          <div class="stat-num" style="color:var(--teal)">A*</div>
+          <div class="stat-label">Search finds the lowest-cost path every time</div>
+        </div>
+      </div>
+      <div class="problem-card p4">
+        <div class="problem-icon">📊</div>
+        <div class="problem-title">Incomplete Field Data</div>
+        <div class="problem-body">
+          Rural vets and field workers often have only partial information. The system must make intelligent decisions with missing values — gracefully.
+        </div>
+        <div class="stat-callout">
+          <div class="stat-num" style="color:var(--sky)">2 Engines</div>
+          <div class="stat-label">Decision Tree for full data · Bayes for partial</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <svg class="pulse-bg" viewBox="0 0 1400 120" preserveAspectRatio="none" style="opacity:.05">
+    <polyline fill="none" stroke="#1AAE87" stroke-width="3"
+      points="0,60 80,60 110,60 130,10 150,110 170,60 220,60 310,60 340,60 360,10 380,110 400,60 450,60 540,60 570,60 590,10 610,110 630,60 680,60 1400,60"/>
+  </svg>
+  <div class="slide-num">02 / 10</div>
+</section>
+
+
+<!-- ═══════════ SLIDE 3 — SYSTEM OVERVIEW ═══════════ -->
+<section class="slide" id="s3">
+  <div style="max-width:1100px;width:100%">
+    <div class="eyebrow anim-ready">Architecture</div>
+    <h2 class="display anim-ready anim-delay-1" style="font-size:clamp(28px,3.5vw,46px)">
+      How <span class="serif-em">PetPulse AI</span> works
+    </h2>
+    <div class="arch-wrap">
+
+      <!-- Flow diagram -->
+      <div class="anim-ready anim-delay-2">
+        <div style="font-family:var(--ff-mono);font-size:11px;color:var(--teal);margin-bottom:18px;letter-spacing:.1em">DIAGNOSIS PIPELINE</div>
+        <div class="flow">
+          <div class="flow-node">
+            <div class="flow-connector">
+              <div class="flow-dot filled">1</div>
+              <div class="flow-line"></div>
+            </div>
+            <div class="flow-content">
+              <div class="flow-title">Symptom Input</div>
+              <div class="flow-desc">Vet or owner enters up to 4 symptoms, binary flags (vomiting, diarrhea, etc.), and vitals via the HTML frontend or REST API.</div>
+            </div>
+          </div>
+          <div class="flow-node">
+            <div class="flow-connector">
+              <div class="flow-dot filled">2</div>
+              <div class="flow-line"></div>
+            </div>
+            <div class="flow-content">
+              <div class="flow-title">Preprocessing</div>
+              <div class="flow-desc">Label encoding, binary flag mapping, StandardScaler normalization. Automatic handling of missing or partial values.</div>
+            </div>
+          </div>
+          <div class="flow-node">
+            <div class="flow-connector">
+              <div class="flow-dot filled">3</div>
+              <div class="flow-line"></div>
+            </div>
+            <div class="flow-content">
+              <div class="flow-title">Engine Routing</div>
+              <div class="flow-desc">Complete input → Decision Tree (Gini, max_depth=5). Partial input → Naive Bayes with Laplace smoothing. Both return ranked probabilities.</div>
+            </div>
+          </div>
+          <div class="flow-node">
+            <div class="flow-connector">
+              <div class="flow-dot filled">4</div>
+              <div class="flow-line"></div>
+            </div>
+            <div class="flow-content">
+              <div class="flow-title">A* Treatment Path</div>
+              <div class="flow-desc">f(n) = g(n) + h(n) heuristic search finds the minimum-cost step sequence from triage to recovery discharge.</div>
+            </div>
+          </div>
+          <div class="flow-node">
+            <div class="flow-connector">
+              <div class="flow-dot">5</div>
+            </div>
+            <div class="flow-content">
+              <div class="flow-title">JSON Response</div>
+              <div class="flow-desc">Top-5 ranked diseases with probabilities, optimal treatment path, clinical protocols, and urgency level returned via <code style="color:var(--teal);font-family:var(--ff-mono)">/api/diagnose</code>.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stack pills -->
+      <div class="anim-ready anim-delay-3">
+        <div style="font-family:var(--ff-mono);font-size:11px;color:var(--teal);margin-bottom:18px;letter-spacing:.1em">TECHNOLOGY STACK</div>
+        <div class="stack-pills">
+          <div class="stack-pill">
+            <div class="stack-icon">🐍</div>
+            <div class="stack-info">
+              <div class="stack-name">Python 3.11 + Flask</div>
+              <div class="stack-role">REST backend, CORS-enabled, auto-trains on startup</div>
+            </div>
+            <span class="stack-badge badge-teal">Backend</span>
+          </div>
+          <div class="stack-pill">
+            <div class="stack-icon">🌲</div>
+            <div class="stack-info">
+              <div class="stack-name">scikit-learn Decision Tree</div>
+              <div class="stack-role">Gini criterion · max_depth=5 · 75/25 split</div>
+            </div>
+            <span class="stack-badge badge-teal">ML</span>
+          </div>
+          <div class="stack-pill">
+            <div class="stack-icon">🎲</div>
+            <div class="stack-info">
+              <div class="stack-name">Naive Bayes (custom)</div>
+              <div class="stack-role">Log-space arithmetic + Laplace smoothing</div>
+            </div>
+            <span class="stack-badge badge-coral">ML</span>
+          </div>
+          <div class="stack-pill">
+            <div class="stack-icon">⭐</div>
+            <div class="stack-info">
+              <div class="stack-name">A* Search (custom heapq)</div>
+              <div class="stack-role">5 disease-specific graphs + generic fallback</div>
+            </div>
+            <span class="stack-badge badge-sky">AI</span>
+          </div>
+          <div class="stack-pill">
+            <div class="stack-icon">🐼</div>
+            <div class="stack-info">
+              <div class="stack-name">pandas + NumPy</div>
+              <div class="stack-role">Dataset loading, feature engineering, encoding</div>
+            </div>
+            <span class="stack-badge badge-amber">Data</span>
+          </div>
+          <div class="stack-pill">
+            <div class="stack-icon">🌐</div>
+            <div class="stack-info">
+              <div class="stack-name">HTML / JS Frontend</div>
+              <div class="stack-role">Standalone with embedded JS fallback engine</div>
+            </div>
+            <span class="stack-badge badge-teal">Frontend</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">03 / 10</div>
+</section>
+
+
+<!-- ═══════════ SLIDE 4 — DATA & PREPROCESSING ═══════════ -->
+<section class="slide" id="s4">
+  <div style="max-width:1100px;width:100%">
+    <div class="eyebrow anim-ready">Dataset & Preprocessing</div>
+    <h2 class="display anim-ready anim-delay-1" style="font-size:clamp(28px,3.5vw,46px)">
+      Turning raw vet records into <span class="serif-em">ML-ready</span> features
+    </h2>
+
+    <div class="data-grid">
+
+      <!-- Dataset card -->
+      <div class="anim-ready anim-delay-2">
+        <div class="dataset-card">
+          <div class="dataset-header">
+            <div class="ds-dot" style="background:var(--teal)"></div>
+            <div class="ds-dot" style="background:var(--coral)"></div>
+            <div class="ds-dot" style="background:var(--amber)"></div>
+            <span style="font-family:var(--ff-mono);font-size:11px;color:var(--mist);margin-left:6px">pet_disease_full_merged.csv</span>
+          </div>
+          <div class="dataset-body">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px">
+              <div style="background:var(--deep);border-radius:8px;padding:12px;text-align:center">
+                <div style="font-family:var(--ff-head);font-size:28px;font-weight:900;color:var(--teal)">215+</div>
+                <div style="font-size:11px;color:var(--mist);margin-top:2px">Records</div>
+              </div>
+              <div style="background:var(--deep);border-radius:8px;padding:12px;text-align:center">
+                <div style="font-family:var(--ff-head);font-size:28px;font-weight:900;color:var(--teal2)">16</div>
+                <div style="font-size:11px;color:var(--mist);margin-top:2px">Features</div>
+              </div>
+              <div style="background:var(--deep);border-radius:8px;padding:12px;text-align:center">
+                <div style="font-family:var(--ff-head);font-size:28px;font-weight:900;color:var(--coral)">68</div>
+                <div style="font-size:11px;color:var(--mist);margin-top:2px">Disease classes</div>
+              </div>
+              <div style="background:var(--deep);border-radius:8px;padding:12px;text-align:center">
+                <div style="font-family:var(--ff-head);font-size:28px;font-weight:900;color:var(--amber)">3</div>
+                <div style="font-size:11px;color:var(--mist);margin-top:2px">Animal types</div>
+              </div>
+            </div>
+            <div class="feature-list">
+              <div class="feature-row"><span class="f-name">Animal Type, Breed</span><span class="f-type" style="color:var(--sky)">Categorical</span></div>
+              <div class="feature-row"><span class="f-name">Age, Heart Rate, Body Temp</span><span class="f-type" style="color:var(--amber)">Numerical</span></div>
+              <div class="feature-row"><span class="f-name">Symptom 1–4</span><span class="f-type" style="color:var(--teal)">Multi-label</span></div>
+              <div class="feature-row"><span class="f-name">Vomiting, Diarrhea, Coughing…</span><span class="f-type" style="color:var(--coral)">Binary Flag</span></div>
+              <div class="feature-row"><span class="f-name">Disease Prediction</span><span class="f-type" style="color:var(--teal2)">Target</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pipeline steps -->
+      <div class="anim-ready anim-delay-3">
+        <div style="font-family:var(--ff-mono);font-size:11px;color:var(--teal);margin-bottom:18px;letter-spacing:.1em">PREPROCESSING PIPELINE</div>
+        <div class="pipeline-steps">
+          <div class="pipe-step">
+            <div class="pipe-num">01</div>
+            <div class="pipe-info">
+              <div class="pipe-title">Missing Value Imputation</div>
+              <div class="pipe-desc">Categorical columns filled with mode. Numerical columns filled with median. Prevents data leakage.</div>
+            </div>
+          </div>
+          <div class="pipe-step">
+            <div class="pipe-num">02</div>
+            <div class="pipe-info">
+              <div class="pipe-title">Temperature Parsing</div>
+              <div class="pipe-desc">Strips <code style="color:var(--teal);font-family:var(--ff-mono);font-size:11px">"39.2°C"</code> → <code style="color:var(--teal);font-family:var(--ff-mono);font-size:11px">39.2</code> float. Handles inconsistent formatting across records.</div>
+            </div>
+          </div>
+          <div class="pipe-step">
+            <div class="pipe-num">03</div>
+            <div class="pipe-info">
+              <div class="pipe-title">Binary Flag Encoding</div>
+              <div class="pipe-desc">Yes/No symptoms → 1/0. Vomiting, Diarrhea, Coughing, Lameness, Skin Lesions, and more.</div>
+            </div>
+          </div>
+          <div class="pipe-step">
+            <div class="pipe-num">04</div>
+            <div class="pipe-info">
+              <div class="pipe-title">Label Encoding</div>
+              <div class="pipe-desc">Categorical features (Animal Type, Breed, Symptoms) mapped to integer indices via LabelEncoder with fitted vocabularies.</div>
+            </div>
+          </div>
+          <div class="pipe-step">
+            <div class="pipe-num">05</div>
+            <div class="pipe-info">
+              <div class="pipe-title">StandardScaler Normalization</div>
+              <div class="pipe-desc">Age, Heart Rate, and Body Temperature scaled to zero-mean, unit-variance. Prevents large-range features dominating the tree splits.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">04 / 10</div>
+</section>
+
+
+<!-- ═══════════ SLIDE 5 — DECISION TREE ═══════════ -->
+<section class="slide" id="s5">
+  <div style="max-width:1100px;width:100%">
+    <div class="eyebrow anim-ready">Machine Learning · Engine 1</div>
+    <h2 class="display anim-ready anim-delay-1" style="font-size:clamp(28px,3.5vw,46px)">
+      Decision Tree Classifier
+    </h2>
+    <p class="body-text anim-ready anim-delay-2" style="max-width:520px;margin-bottom:28px">
+      When complete patient data is available, the Decision Tree runs — splitting on the most informative feature at each node using the <strong style="color:var(--chalk)">Gini impurity</strong> criterion.
+    </p>
+
+    <div class="dt-layout">
+      <!-- Visual tree -->
+      <div class="tree-svg-wrap anim-ready anim-delay-2">
+        <div style="font-family:var(--ff-mono);font-size:10px;color:var(--teal);margin-bottom:14px;letter-spacing:.1em">SIMPLIFIED TREE STRUCTURE (depth=3)</div>
+        <svg viewBox="0 0 460 310" xmlns="http://www.w3.org/2000/svg">
+          <!-- Edges -->
+          <line class="edge" x1="230" y1="40" x2="120" y2="110"/>
+          <line class="edge" x1="230" y1="40" x2="340" y2="110"/>
+          <line class="edge" x1="120" y1="140" x2="65"  y2="200"/>
+          <line class="edge" x1="120" y1="140" x2="175" y2="200"/>
+          <line class="edge" x1="340" y1="140" x2="285" y2="200"/>
+          <line class="edge" x1="340" y1="140" x2="395" y2="200"/>
+          <!-- Edge labels -->
+          <text class="edge-label" x="162" y="78">≤ 0</text>
+          <text class="edge-label" x="293" y="78">≥ 1</text>
+          <text class="edge-label" x="72"  y="178">No</text>
+          <text class="edge-label" x="155" y="178">Yes</text>
+          <text class="edge-label" x="290" y="178">≤ 38°</text>
+          <text class="edge-label" x="360" y="178">≥ 39°</text>
+
+          <!-- Root node -->
+          <rect class="node-box root" x="170" y="10" width="120" height="44" rx="8"/>
+          <text class="node-text-main" x="230" y="29" text-anchor="middle">Vomiting</text>
+          <text class="node-text-sub"  x="230" y="44" text-anchor="middle">Gini=0.82 · n=215</text>
+
+          <!-- Level 2 -->
+          <rect class="node-box" x="68"  y="110" width="104" height="40" rx="7"/>
+          <text class="node-text-main" x="120" y="126" text-anchor="middle">Animal Type</text>
+          <text class="node-text-sub"  x="120" y="140" text-anchor="middle">Gini=0.76 · n=118</text>
+
+          <rect class="node-box" x="288" y="110" width="104" height="40" rx="7"/>
+          <text class="node-text-main" x="340" y="126" text-anchor="middle">Body Temp</text>
+          <text class="node-text-sub"  x="340" y="140" text-anchor="middle">Gini=0.71 · n=97</text>
+
+          <!-- Level 3 leaves -->
+          <rect class="node-box leaf" x="20"  y="200" width="90" height="38" rx="6"/>
+          <text class="leaf-text" x="65"  y="216" text-anchor="middle">Gastroenteritis</text>
+          <text class="gini-text" x="65"  y="230" text-anchor="middle">p=0.72 · n=32</text>
+
+          <rect class="node-box leaf" x="128" y="200" width="90" height="38" rx="6"/>
+          <text class="leaf-text" x="173" y="216" text-anchor="middle">Parvovirus</text>
+          <text class="gini-text" x="173" y="230" text-anchor="middle">p=0.85 · n=24</text>
+
+          <rect class="node-box leaf" x="238" y="200" width="94" height="38" rx="6"/>
+          <text class="leaf-text" x="285" y="216" text-anchor="middle">URI · FIP</text>
+          <text class="gini-text" x="285" y="230" text-anchor="middle">p=0.68 · n=41</text>
+
+          <rect class="node-box leaf" x="348" y="200" width="94" height="38" rx="6"/>
+          <text class="leaf-text" x="395" y="216" text-anchor="middle">Bovine BRD</text>
+          <text class="gini-text" x="395" y="230" text-anchor="middle">p=0.91 · n=20</text>
+
+          <!-- Legend -->
+          <rect fill="rgba(26,174,135,.08)" stroke="#1AAE87" stroke-width="1" x="20" y="268" width="12" height="12" rx="2"/>
+          <text fill="#A8C4BC" font-size="9" font-family="Space Mono" x="36" y="279">Decision node</text>
+          <rect fill="none" stroke="#FF7A5C" stroke-width="1" x="140" y="268" width="12" height="12" rx="2"/>
+          <text fill="#A8C4BC" font-size="9" font-family="Space Mono" x="156" y="279">Leaf / prediction</text>
+          <text fill="#1AAE87" font-size="9" font-family="Space Mono" x="270" y="279">Orange = disease label</text>
+          <text fill="#0DD4A4" font-size="9" font-family="Space Mono" x="270" y="292">Green = Gini / confidence</text>
+        </svg>
+      </div>
+
+      <!-- Metrics -->
+      <div class="metrics-col anim-ready anim-delay-3">
+        <div class="metric-card">
+          <div class="metric-label">Test Accuracy (75/25 split)</div>
+          <div class="metric-val" style="color:var(--teal2)">~92%</div>
+          <div class="metric-bar"><div class="metric-fill" style="width:92%"></div></div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Hyperparameters</div>
+          <div class="params-grid">
+            <div class="param-item"><div class="param-key">criterion</div><div class="param-val">gini</div></div>
+            <div class="param-item"><div class="param-key">max_depth</div><div class="param-val">5</div></div>
+            <div class="param-item"><div class="param-key">min_samples_leaf</div><div class="param-val">1</div></div>
+            <div class="param-item"><div class="param-key">random_state</div><div class="param-val">65</div></div>
+          </div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">When it activates</div>
+          <div style="font-size:13px;color:var(--mist);line-height:1.7;margin-top:8px">
+            All 4 symptom slots filled <strong style="color:var(--chalk)">AND</strong> at least 4 binary clinical flags provided. Produces a full feature vector for tree traversal from root to leaf.
+          </div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Output</div>
+          <div style="font-size:13px;color:var(--mist);line-height:1.7;margin-top:8px">
+            Top-5 diseases ranked by <code style="color:var(--teal);font-family:var(--ff-mono);font-size:11px">predict_proba()</code> — the probability mass at the predicted leaf node.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">05 / 10</div>
+</section>
+
+
+<!-- ═══════════ SLIDE 6 — NAIVE BAYES ═══════════ -->
+<section class="slide" id="s6">
+  <div style="max-width:1100px;width:100%">
+    <div class="eyebrow anim-ready">Machine Learning · Engine 2</div>
+    <h2 class="display anim-ready anim-delay-1" style="font-size:clamp(28px,3.5vw,46px)">
+      Naïve Bayes Inference
+    </h2>
+    <p class="body-text anim-ready anim-delay-2" style="max-width:560px;margin-bottom:28px">
+      When input is partial or incomplete, Naive Bayes takes over — computing posterior probabilities over all disease classes using only the features that <em>are</em> available.
+    </p>
+
+    <div class="nb-layout">
+      <!-- Left: formula + table -->
+      <div class="anim-ready anim-delay-2">
+        <div class="formula-card">
+          <span class="f-comment">// Posterior (log-space for underflow safety)</span><br/>
+          log P(<span class="f-highlight">D</span> | X) = log P(<span class="f-highlight">D</span>)<br/>
+          &nbsp;&nbsp;&nbsp;&nbsp;+ Σ log P(<span class="f-coral">xᵢ</span> | <span class="f-highlight">D</span>)<br/><br/>
+          <span class="f-comment">// Laplace smoothing — avoids zero prob</span><br/>
+          P(<span class="f-coral">x</span>|<span class="f-highlight">D</span>) = (count(x,D) + 1) / (|D| + |V|)
+        </div>
+
+        <div style="font-family:var(--ff-mono);font-size:10px;color:var(--teal);margin-bottom:12px;letter-spacing:.1em">EXAMPLE OUTPUT · partial input (Fever + Coughing)</div>
+        <div class="card">
+          <table class="prob-table" style="width:100%">
+            <thead>
+              <tr>
+                <th>Disease</th>
+                <th>Probability</th>
+                <th style="text-align:right">Score</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="dis-name-cell" style="color:var(--teal2)">Bovine Resp. Disease</td>
+                <td><div class="pbar-wrap"><div class="pbar-fill" style="width:78%"></div></div></td>
+                <td style="text-align:right"><span class="pct-num">78.2%</span></td>
+              </tr>
+              <tr>
+                <td class="dis-name-cell">Kennel Cough</td>
+                <td><div class="pbar-wrap"><div class="pbar-fill" style="width:62%"></div></div></td>
+                <td style="text-align:right"><span class="pct-num">62.1%</span></td>
+              </tr>
+              <tr>
+                <td class="dis-name-cell">Canine Distemper</td>
+                <td><div class="pbar-wrap"><div class="pbar-fill" style="width:48%"></div></div></td>
+                <td style="text-align:right"><span class="pct-num">48.5%</span></td>
+              </tr>
+              <tr>
+                <td class="dis-name-cell">URI (Cat)</td>
+                <td><div class="pbar-wrap"><div class="pbar-fill" style="width:31%"></div></div></td>
+                <td style="text-align:right"><span class="pct-num">31.3%</span></td>
+              </tr>
+              <tr>
+                <td class="dis-name-cell">Bovine TB</td>
+                <td><div class="pbar-wrap"><div class="pbar-fill" style="width:18%"></div></div></td>
+                <td style="text-align:right"><span class="pct-num">18.0%</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Right: advantages -->
+      <div class="anim-ready anim-delay-3">
+        <div style="font-family:var(--ff-mono);font-size:10px;color:var(--teal);margin-bottom:18px;letter-spacing:.1em">WHY NAIVE BAYES FOR PARTIAL INPUT</div>
+        <div class="nb-advantage-list">
+          <div class="nb-adv">
+            <div class="nb-adv-icon">🔢</div>
+            <div class="nb-adv-text"><strong style="color:var(--chalk)">Log-space arithmetic</strong> — multiplying many small probabilities causes floating-point underflow. Log sums keep everything numerically stable.</div>
+          </div>
+          <div class="nb-adv">
+            <div class="nb-adv-icon">🛡️</div>
+            <div class="nb-adv-text"><strong style="color:var(--chalk)">Laplace smoothing</strong> — any symptom not seen for a disease gets probability (0+1)/(n+|V|) instead of zero, preventing a single missing feature from killing a valid hypothesis.</div>
+          </div>
+          <div class="nb-adv">
+            <div class="nb-adv-icon">🔀</div>
+            <div class="nb-adv-text"><strong style="color:var(--chalk)">Handles missing features naturally</strong> — just skip terms whose feature is absent. No imputation needed; the posterior simply uses fewer terms.</div>
+          </div>
+          <div class="nb-adv">
+            <div class="nb-adv-icon">⚡</div>
+            <div class="nb-adv-text"><strong style="color:var(--chalk)">O(k · f) inference</strong> — k disease classes × f observed features. Effectively instant even with 68 classes.</div>
+          </div>
+          <div class="nb-adv">
+            <div class="nb-adv-icon">📍</div>
+            <div class="nb-adv-text"><strong style="color:var(--chalk)">Prior probabilities</strong> encode base disease rates in the dataset, so rare diseases aren't given equal weight to common ones.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">06 / 10</div>
+</section>
+
+
+<!-- ═══════════ SLIDE 7 — A* TREATMENT PATH ═══════════ -->
+<section class="slide" id="s7">
+  <div style="max-width:1100px;width:100%">
+    <div class="eyebrow anim-ready">Pathfinding · Treatment Planning</div>
+    <h2 class="display anim-ready anim-delay-1" style="font-size:clamp(28px,3.5vw,46px)">
+      A* Optimal Treatment Routing
+    </h2>
+    <p class="body-text anim-ready anim-delay-2" style="max-width:580px;margin-bottom:28px">
+      After diagnosis, A* search navigates a disease-specific treatment graph — finding the <strong style="color:var(--chalk)">lowest-cost path</strong> from initial triage to full recovery discharge.
+    </p>
+
+    <div class="astar-layout">
+      <!-- Interactive path viewer -->
+      <div class="anim-ready anim-delay-2">
+        <div class="disease-tabs" id="diseaseTabs">
+          <button class="dtab active" data-disease="parvovirus">Parvovirus</button>
+          <button class="dtab" data-disease="brd">Bovine BRD</button>
+          <button class="dtab" data-disease="uri">Cat URI</button>
+          <button class="dtab" data-disease="fip">Cat FIP</button>
+          <button class="dtab" data-disease="tb">Bovine TB</button>
+        </div>
+        <div class="path-visual" id="pathVisual"></div>
+      </div>
+
+      <!-- A* formula + properties -->
+      <div class="anim-ready anim-delay-3">
+        <div class="astar-formula">
+          <div class="af-title">A* EVALUATION FUNCTION</div>
+          <div class="af-eq">f(n) = <span style="color:var(--teal)">g(n)</span> + <span style="color:var(--coral)">h(n)</span></div>
+          <div class="af-terms">
+            <div class="af-term"><span class="af-sym" style="color:var(--teal)">g</span>Actual cost from start node to current node (treatment steps taken so far)</div>
+            <div class="af-term"><span class="af-sym" style="color:var(--coral)">h</span>Admissible heuristic — remaining steps to recovery (never overestimates → guarantees optimality)</div>
+            <div class="af-term"><span class="af-sym">f</span>Priority score used to order the open heap. Always expand lowest-f node next.</div>
+          </div>
+        </div>
+
+        <div style="margin-top:18px">
+          <div style="font-family:var(--ff-mono);font-size:10px;color:var(--teal);margin-bottom:12px;letter-spacing:.1em">GRAPH PROPERTIES</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 16px;font-size:13px;color:var(--mist)">
+              <strong style="color:var(--chalk)">5 disease-specific graphs</strong> for Parvovirus, Bovine TB, URI, FIP, and Bovine BRD — each with custom node weights reflecting clinical urgency.
+            </div>
+            <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 16px;font-size:13px;color:var(--mist)">
+              <strong style="color:var(--chalk)">1 generic fallback graph</strong> — Emergency Triage → Diagnostic Workup → Stabilisation → Targeted Treatment → Recovery — for any disease without a specific graph.
+            </div>
+            <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 16px;font-size:13px;color:var(--mist)">
+              <strong style="color:var(--chalk)">Min-heap (heapq)</strong> ensures O(E log V) complexity. Visited set prevents re-expansion. Guaranteed optimal when h is admissible.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">07 / 10</div>
+</section>
+
+
+<!-- ═══════════ SLIDE 8 — LIVE EXAMPLES ═══════════ -->
+<section class="slide" id="s8">
+  <div style="max-width:1100px;width:100%">
+    <div class="eyebrow anim-ready">Worked Examples</div>
+    <h2 class="display anim-ready anim-delay-1" style="font-size:clamp(28px,3.5vw,46px)">
+      Three cases. Three animals.<br/><span class="serif-em">Three different engines.</span>
+    </h2>
+
+    <div class="example-grid anim-ready anim-delay-2">
+
+      <!-- Case 1: Dog, full input -->
+      <div class="ex-card">
+        <div class="ex-header" style="background:rgba(255,122,92,.06);border-color:rgba(255,122,92,.2)">
+          <span class="ex-animal-icon">🐕</span>
+          <div>
+            <div class="ex-title">Bruno · Golden Retriever</div>
+            <div class="ex-subtitle">Dog · 3 yrs · Full data → Decision Tree</div>
+          </div>
+        </div>
+        <div class="ex-body">
+          <div class="ex-input-list">
+            <div class="ex-input-row"><span class="ex-key">Symptom 1</span><span class="ex-val pos">Vomiting</span></div>
+            <div class="ex-input-row"><span class="ex-key">Symptom 2</span><span class="ex-val pos">Diarrhea</span></div>
+            <div class="ex-input-row"><span class="ex-key">Symptom 3</span><span class="ex-val">Lethargy</span></div>
+            <div class="ex-input-row"><span class="ex-key">Symptom 4</span><span class="ex-val">Dehydration</span></div>
+            <div class="ex-input-row"><span class="ex-key">Body Temp</span><span class="ex-val pos">40.2°C</span></div>
+            <div class="ex-input-row"><span class="ex-key">Heart Rate</span><span class="ex-val pos">118 bpm</span></div>
+            <div class="ex-input-row"><span class="ex-key">Vomiting flag</span><span class="ex-val pos">YES</span></div>
+            <div class="ex-input-row"><span class="ex-key">Diarrhea flag</span><span class="ex-val pos">YES</span></div>
+          </div>
+          <div class="ex-result">
+            <div class="ex-disease">Canine Parvovirus</div>
+            <div class="ex-conf">Decision Tree · confidence 87.3%</div>
+            <div class="ex-bar"><div class="ex-bar-fill" style="width:87%"></div></div>
+            <span class="ex-urgency urg-emergency">⚠ EMERGENCY</span>
+          </div>
+          <div style="margin-top:12px;font-size:12px;color:var(--mist);line-height:1.7">
+            <strong style="color:var(--chalk)">Treatment path:</strong> Triage & Isolation → IV Fluids → Antiemetics → Antibiotics → Nutritional Support → Monitoring → Discharge
+          </div>
+        </div>
+      </div>
+
+      <!-- Case 2: Cat, partial input -->
+      <div class="ex-card">
+        <div class="ex-header" style="background:rgba(91,184,212,.06);border-color:rgba(91,184,212,.2)">
+          <span class="ex-animal-icon">🐈</span>
+          <div>
+            <div class="ex-title">Luna · Siamese</div>
+            <div class="ex-subtitle">Cat · 5 yrs · Partial data → Naive Bayes</div>
+          </div>
+        </div>
+        <div class="ex-body">
+          <div class="ex-input-list">
+            <div class="ex-input-row"><span class="ex-key">Symptom 1</span><span class="ex-val pos">Sneezing</span></div>
+            <div class="ex-input-row"><span class="ex-key">Symptom 2</span><span class="ex-val">Nasal Discharge</span></div>
+            <div class="ex-input-row"><span class="ex-key">Symptom 3</span><span class="ex-val" style="color:var(--mist);font-style:italic">— unknown</span></div>
+            <div class="ex-input-row"><span class="ex-key">Symptom 4</span><span class="ex-val" style="color:var(--mist);font-style:italic">— unknown</span></div>
+            <div class="ex-input-row"><span class="ex-key">Coughing flag</span><span class="ex-val pos">YES</span></div>
+            <div class="ex-input-row"><span class="ex-key">Body Temp</span><span class="ex-val" style="color:var(--mist);font-style:italic">not recorded</span></div>
+            <div class="ex-input-row"><span class="ex-key">Engine</span><span class="ex-val" style="color:var(--sky)">Naive Bayes</span></div>
+          </div>
+          <div class="ex-result">
+            <div class="ex-disease">Upper Respiratory Infection</div>
+            <div class="ex-conf">Naive Bayes · posterior 72.1%</div>
+            <div class="ex-bar"><div class="ex-bar-fill" style="width:72%"></div></div>
+            <span class="ex-urgency urg-moderate">MODERATE</span>
+          </div>
+          <div style="margin-top:12px;font-size:12px;color:var(--mist);line-height:1.7">
+            <strong style="color:var(--chalk)">Treatment path:</strong> Clinical Assessment → Nasal Swab → Antibiotic Therapy → Nebulization → Nutritional Support → Discharge
+          </div>
+        </div>
+      </div>
+
+      <!-- Case 3: Cow -->
+      <div class="ex-card">
+        <div class="ex-header" style="background:rgba(245,166,35,.06);border-color:rgba(245,166,35,.2)">
+          <span class="ex-animal-icon">🐄</span>
+          <div>
+            <div class="ex-title">Herd Animal · Holstein</div>
+            <div class="ex-subtitle">Cow · 4 yrs · Full data → Decision Tree</div>
+          </div>
+        </div>
+        <div class="ex-body">
+          <div class="ex-input-list">
+            <div class="ex-input-row"><span class="ex-key">Symptom 1</span><span class="ex-val pos">Coughing</span></div>
+            <div class="ex-input-row"><span class="ex-key">Symptom 2</span><span class="ex-val pos">Fever</span></div>
+            <div class="ex-input-row"><span class="ex-key">Symptom 3</span><span class="ex-val">Nasal Discharge</span></div>
+            <div class="ex-input-row"><span class="ex-key">Symptom 4</span><span class="ex-val pos">Labored Breathing</span></div>
+            <div class="ex-input-row"><span class="ex-key">Body Temp</span><span class="ex-val pos">40.8°C</span></div>
+            <div class="ex-input-row"><span class="ex-key">Coughing flag</span><span class="ex-val pos">YES</span></div>
+            <div class="ex-input-row"><span class="ex-key">Labored Breathing</span><span class="ex-val pos">YES</span></div>
+          </div>
+          <div class="ex-result">
+            <div class="ex-disease">Bovine Respiratory Disease</div>
+            <div class="ex-conf">Decision Tree · confidence 91.0%</div>
+            <div class="ex-bar"><div class="ex-bar-fill" style="width:91%"></div></div>
+            <span class="ex-urgency urg-high">⬆ HIGH</span>
+          </div>
+          <div style="margin-top:12px;font-size:12px;color:var(--mist);line-height:1.7">
+            <strong style="color:var(--chalk)">Treatment path:</strong> Isolation & Rest → Vitals Check → Tulathromycin → NSAID → Bronchodilator → Nutrition → Return to Herd
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">08 / 10</div>
+</section>
+
+
+<!-- ═══════════ SLIDE 9 — API ═══════════ -->
+<section class="slide" id="s9">
+  <div style="max-width:1100px;width:100%">
+    <div class="eyebrow anim-ready">REST API</div>
+    <h2 class="display anim-ready anim-delay-1" style="font-size:clamp(28px,3.5vw,46px)">
+      Flask backend, ready to integrate
+    </h2>
+    <p class="body-text anim-ready anim-delay-2" style="max-width:520px;margin-bottom:28px">
+      The system exposes a clean REST interface. Any frontend — web, mobile, or embedded — can query it. The model trains automatically on startup from the CSV.
+    </p>
+
+    <div class="api-grid">
+      <!-- Endpoints -->
+      <div class="anim-ready anim-delay-2">
+        <div style="font-family:var(--ff-mono);font-size:10px;color:var(--teal);margin-bottom:14px;letter-spacing:.1em">ENDPOINTS · http://localhost:5000</div>
+        <div class="endpoint-list">
+          <div class="endpoint">
+            <span class="method-badge get">GET</span>
+            <div>
+              <div class="ep-path">/api/health</div>
+              <div class="ep-desc">Ping — confirms backend is running. Returns record count, disease count, and active model name.</div>
+            </div>
+          </div>
+          <div class="endpoint">
+            <span class="method-badge post">POST</span>
+            <div>
+              <div class="ep-path">/api/diagnose</div>
+              <div class="ep-desc">Main inference endpoint. Accepts full patient session JSON. Returns ranked diseases, A* treatment path, treatment text, and prevention advice.</div>
+            </div>
+          </div>
+          <div class="endpoint">
+            <span class="method-badge get">GET</span>
+            <div>
+              <div class="ep-path">/api/symptoms</div>
+              <div class="ep-desc">Returns all unique symptom values in the dataset — useful for frontend autocomplete dropdowns.</div>
+            </div>
+          </div>
+          <div class="endpoint">
+            <span class="method-badge get">GET</span>
+            <div>
+              <div class="ep-path">/api/diseases</div>
+              <div class="ep-desc">Returns the full sorted list of disease classes the model knows about.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Response JSON -->
+      <div class="anim-ready anim-delay-3">
+        <div style="font-family:var(--ff-mono);font-size:10px;color:var(--teal);margin-bottom:14px;letter-spacing:.1em">SAMPLE RESPONSE · /api/diagnose</div>
+        <div class="json-block">
+{<br/>
+&nbsp;&nbsp;<span class="jkey">"primary_disease"</span>: <span class="jstr">"Canine Parvovirus"</span>,<br/>
+&nbsp;&nbsp;<span class="jkey">"engine_used"</span>: <span class="jstr">"Decision Tree (CO4)"</span>,<br/>
+&nbsp;&nbsp;<span class="jkey">"input_complete"</span>: <span class="jbool">true</span>,<br/>
+&nbsp;&nbsp;<span class="jkey">"top_diseases"</span>: [<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="jkey">"disease"</span>: <span class="jstr">"Canine Parvovirus"</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="jkey">"probability"</span>: <span class="jnum">0.873</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;},<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="jkey">"disease"</span>: <span class="jstr">"Gastroenteritis"</span>, <span class="jkey">"probability"</span>: <span class="jnum">0.082</span> }<br/>
+&nbsp;&nbsp;],<br/>
+&nbsp;&nbsp;<span class="jkey">"treatment_path"</span>: {<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="jkey">"path"</span>: [<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="jkey">"step"</span>: <span class="jnum">1</span>, <span class="jkey">"action"</span>: <span class="jstr">"Triage &amp; Isolation"</span> },<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="jkey">"step"</span>: <span class="jnum">2</span>, <span class="jkey">"action"</span>: <span class="jstr">"IV Fluid Therapy"</span> },<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="jkey">"step"</span>: <span class="jnum">6</span>, <span class="jkey">"action"</span>: <span class="jstr">"Recovery &amp; Discharge"</span>, <span class="jkey">"is_goal"</span>: <span class="jbool">true</span> }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;],<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="jkey">"total_cost"</span>: <span class="jnum">7</span><br/>
+&nbsp;&nbsp;},<br/>
+&nbsp;&nbsp;<span class="jkey">"treatment_text"</span>: <span class="jstr">"IV fluid therapy (LRS)..."</span>,<br/>
+&nbsp;&nbsp;<span class="jkey">"prevention_text"</span>: <span class="jstr">"MLV CPV-2 vaccine..."</span><br/>
+}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">09 / 10</div>
+</section>
+
+
+<!-- ═══════════ SLIDE 10 — CLOSING ═══════════ -->
+<section class="slide" id="s10">
+  <div style="max-width:1100px;width:100%">
+    <div class="eyebrow anim-ready">Summary & Future Work</div>
+    <h2 class="display anim-ready anim-delay-1" style="font-size:clamp(28px,3.5vw,52px)">
+      PetPulse AI — <span class="serif-em">what we built</span>
+    </h2>
+
+    <div class="closing-grid">
+      <!-- Summary -->
+      <div class="anim-ready anim-delay-2">
+        <div class="summary-list">
+          <div class="sum-item">
+            <span class="sum-icon">🧠</span>
+            <div>
+              <div class="sum-title">Hybrid Reasoning Engine</div>
+              <div class="sum-desc">Decision Tree for complete data (92% accuracy), Naive Bayes with Laplace smoothing for partial data. Both return ranked, probabilistic diagnoses.</div>
+            </div>
+          </div>
+          <div class="sum-item">
+            <span class="sum-icon">⭐</span>
+            <div>
+              <div class="sum-title">A* Optimal Treatment Planning</div>
+              <div class="sum-desc">5 disease-specific graphs + 1 generic fallback. Guaranteed minimum-cost path from triage to recovery using an admissible heuristic.</div>
+            </div>
+          </div>
+          <div class="sum-item">
+            <span class="sum-icon">🌐</span>
+            <div>
+              <div class="sum-title">Full-Stack Deployment</div>
+              <div class="sum-desc">Flask REST API, standalone HTML frontend with embedded JS fallback engine that runs without a server. Works offline for demos.</div>
+            </div>
+          </div>
+          <div class="sum-item">
+            <span class="sum-icon">🐾</span>
+            <div>
+              <div class="sum-title">3 Animal Types · 68 Diseases</div>
+              <div class="sum-desc">Dogs, Cats, and Cattle. Covers emergency conditions (Parvovirus, Bovine TB, FMD) down to moderate cases (Kennel Cough, Ringworm, Gastroenteritis).</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Future work -->
+      <div class="anim-ready anim-delay-3">
+        <div style="font-family:var(--ff-mono);font-size:10px;color:var(--teal);margin-bottom:16px;letter-spacing:.1em">POSSIBLE FUTURE EXTENSIONS</div>
+        <div class="future-list">
+          <div class="future-item"><div class="fi-dot"></div>Expand dataset to 1,000+ records with verified veterinary sources</div>
+          <div class="future-item"><div class="fi-dot"></div>Add Random Forest / XGBoost ensemble for higher accuracy</div>
+          <div class="future-item"><div class="fi-dot"></div>Image-based symptom detection (skin lesions, eye discharge) via CNN</div>
+          <div class="future-item"><div class="fi-dot"></div>Mobile app (React Native) for field use by rural vets</div>
+          <div class="future-item"><div class="fi-dot"></div>Real-time IoT integration — wearable sensors for continuous vitals</div>
+          <div class="future-item"><div class="fi-dot"></div>Multilingual interface (Bengali, Hindi) for South Asian veterinarians</div>
+          <div class="future-item"><div class="fi-dot"></div>PostgreSQL persistence layer for patient history tracking</div>
+        </div>
+
+        <div style="margin-top:24px;background:var(--glow);border:1px solid var(--border);border-radius:12px;padding:18px 20px">
+          <div style="font-family:var(--ff-mono);font-size:10px;color:var(--teal);margin-bottom:8px">QUICK START</div>
+          <div style="font-family:var(--ff-mono);font-size:12px;line-height:2;color:var(--chalk)">
+            <span style="color:var(--mist)">$</span> pip install -r requirements.txt<br/>
+            <span style="color:var(--mist)">$</span> python app.py<br/>
+            <span style="color:var(--mist)"># </span><span style="color:var(--teal2)">Open index.html in browser</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="project-footer anim-ready anim-delay-4">
+      <div>
+        <div class="pf-brand">PetPulse AI 🐾</div>
+        <div class="pf-meta">
+          CSE 3811 — Artificial Intelligence<br/>
+          United International University
+        </div>
+      </div>
+      <div class="pf-stack">
+        <span class="chip">Python</span>
+        <span class="chip chip-coral">Flask</span>
+        <span class="chip chip-sky">scikit-learn</span>
+        <span class="chip chip-amber">Decision Tree</span>
+        <span class="chip">Naive Bayes</span>
+        <span class="chip chip-sky">A* Search</span>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">10 / 10</div>
+</section>
+
+</div><!-- /deck -->
+
+<!-- ═══════════════════════════════════════════════
+     JAVASCRIPT
+═══════════════════════════════════════════════ -->
+<script>
+// ── Nav dots setup ──────────────────────────────────────────
+const totalSlides = 10;
+const navDotsEl   = document.getElementById('navDots');
+const dots = [];
+for (let i = 1; i <= totalSlides; i++) {
+  const btn = document.createElement('button');
+  btn.className = 'nav-dot' + (i === 1 ? ' active' : '');
+  btn.title = `Slide ${i}`;
+  btn.onclick = () => {
+    document.getElementById(`s${i}`).scrollIntoView({behavior:'smooth'});
+  };
+  navDotsEl.appendChild(btn);
+  dots.push(btn);
+}
+
+// ── Scroll watcher ─────────────────────────────────────────
+const deck = document.getElementById('deck');
+const pb   = document.getElementById('progressBar');
+
+deck.addEventListener('scroll', () => {
+  const scrollTop  = deck.scrollTop;
+  const scrollH    = deck.scrollHeight - deck.clientHeight;
+  const progress   = Math.min(100, Math.round((scrollTop / scrollH) * 100));
+  pb.style.width   = progress + '%';
+
+  // Which slide is in view?
+  let activeIdx = 0;
+  for (let i = 1; i <= totalSlides; i++) {
+    const el = document.getElementById(`s${i}`);
+    if (el && el.getBoundingClientRect().top <= deck.clientHeight / 2) {
+      activeIdx = i - 1;
+    }
+  }
+  dots.forEach((d, i) => d.classList.toggle('active', i === activeIdx));
+
+  // Animate elements entering view
+  document.querySelectorAll('.anim-ready:not(.visible)').forEach(el => {
+    const rect = el.getBoundingClientRect();
+    if (rect.top < window.innerHeight * 0.88) el.classList.add('visible');
+  });
+});
+
+// Trigger on first load
+setTimeout(() => {
+  document.querySelectorAll('.anim-ready').forEach(el => {
+    const rect = el.getBoundingClientRect();
+    if (rect.top < window.innerHeight * 0.88) el.classList.add('visible');
+  });
+}, 100);
+
+// ── A* interactive path viewer ─────────────────────────────
+const PATHS = {
+  parvovirus: {
+    title: 'Canine Parvovirus',
+    steps: [
+      {n:'Triage & Isolation', cost:'g=0'},
+      {n:'IV Fluid Therapy', cost:'g=1'},
+      {n:'Antiemetics (Maropitant)', cost:'g=3'},
+      {n:'Broad-Spectrum Antibiotics', cost:'g=4'},
+      {n:'Nutritional Support', cost:'g=5'},
+      {n:'Viral Load Monitoring', cost:'g=7'},
+      {n:'Recovery & Discharge', cost:'g=8 · GOAL', goal:true}
+    ]
+  },
+  brd: {
+    title: 'Bovine Respiratory Disease',
+    steps: [
+      {n:'Isolation & Rest', cost:'g=0'},
+      {n:'Temperature & Vitals Check', cost:'g=1'},
+      {n:'Antibiotic Therapy (Tulathromycin)', cost:'g=2'},
+      {n:'NSAID Pain Management', cost:'g=3'},
+      {n:'Bronchodilator Support', cost:'g=4'},
+      {n:'Nutritional & Hydration Support', cost:'g=5'},
+      {n:'Recovery & Return to Herd', cost:'g=6 · GOAL', goal:true}
+    ]
+  },
+  uri: {
+    title: 'Upper Respiratory Infection (Cat)',
+    steps: [
+      {n:'Clinical Assessment', cost:'g=0'},
+      {n:'Nasal Swab & Culture', cost:'g=1'},
+      {n:'Antibiotic Therapy', cost:'g=2'},
+      {n:'Nebulization Therapy', cost:'g=3'},
+      {n:'Nutritional Support', cost:'g=4'},
+      {n:'Follow-Up & Discharge', cost:'g=5 · GOAL', goal:true}
+    ]
+  },
+  fip: {
+    title: 'Feline Infectious Peritonitis',
+    steps: [
+      {n:'Isolation & Supportive Care', cost:'g=0'},
+      {n:'Effusion Drainage', cost:'g=2'},
+      {n:'GS-441524 Antiviral', cost:'g=3'},
+      {n:'Prednisolone Therapy', cost:'g=5'},
+      {n:'Blood Panel Monitoring', cost:'g=7'},
+      {n:'Response Assessment', cost:'g=8'},
+      {n:'Discharge & Long-term Care', cost:'g=9 · GOAL', goal:true}
+    ]
+  },
+  tb: {
+    title: 'Bovine Tuberculosis',
+    steps: [
+      {n:'Quarantine Animal', cost:'g=0'},
+      {n:'Tuberculin Skin Test', cost:'g=1'},
+      {n:'Confirmatory PCR/Culture', cost:'g=3'},
+      {n:'Notify Authorities', cost:'g=4'},
+      {n:'Herd Depopulation Protocol', cost:'g=6'},
+      {n:'Premises Disinfection', cost:'g=7'},
+      {n:'Re-Testing & Clearance', cost:'g=9 · GOAL', goal:true}
+    ]
+  }
+};
+
+function renderPath(key) {
+  const p = PATHS[key];
+  const pv = document.getElementById('pathVisual');
+  pv.innerHTML = `<div style="font-family:var(--ff-mono);font-size:10px;color:var(--teal);margin-bottom:16px;letter-spacing:.1em">${p.title.toUpperCase()} · OPTIMAL PATH</div>` +
+    p.steps.map((s, i) => `
+      <div class="path-node-row">
+        <div class="pn-connector">
+          <div class="pn-dot ${s.goal?'goal':''}">${i+1}</div>
+          ${i < p.steps.length-1 ? '<div class="pn-line"></div>' : ''}
+        </div>
+        <div class="pn-content">
+          <div class="pn-action">${s.n}</div>
+          <div class="pn-cost">${s.cost}</div>
+          ${s.goal ? '<div class="pn-goal-label">✓ RECOVERY GOAL</div>' : ''}
+        </div>
+      </div>`).join('');
+}
+
+// Init
+renderPath('parvovirus');
+
+document.getElementById('diseaseTabs').addEventListener('click', e => {
+  const btn = e.target.closest('.dtab');
+  if (!btn) return;
+  document.querySelectorAll('.dtab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderPath(btn.dataset.disease);
+});
+
+// Keyboard nav
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowDown' || e.key === 'PageDown') {
+    deck.scrollBy({top: window.innerHeight, behavior:'smooth'});
+  } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
+    deck.scrollBy({top: -window.innerHeight, behavior:'smooth'});
+  }
+});
+</script>
+</body>
+</html>
